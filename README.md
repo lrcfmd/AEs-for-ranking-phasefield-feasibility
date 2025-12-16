@@ -55,7 +55,7 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
    - In the ***** folder, launch jupyter notebook with the following:
    '''jupyter notebook'''
 
-10. **Running the programme**
+11. **Running the programme**
     - Follow the instructions within the notebook to run your own ranking.
     - It contains an example script, ****, that uses an pre-assembled dataset to perform a ranking. It may be best to try using this first to ensure it is working, and that the inputs are all understood.
     - A blank script can be found under ****. 
