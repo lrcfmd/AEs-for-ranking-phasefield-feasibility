@@ -47,7 +47,7 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
      '''Expand-Archive -Path archive.zip -DestinationPath foldername'''
 
 10. **Moving datasets**
-   - If 
+   - If
 
 12. **Launching programme**
     - In the ***** folder, launch jupyter notebook with the following:
