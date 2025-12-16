@@ -29,7 +29,7 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
    - Create a GitHub account if needed.
    - Ensure you have access to the lrcfmd github repositories
 
-8. **Clone the repository**
+7. **Clone the repository**
    - In the command promt, navigate the directory where you wish to copy this repository. Eg.
      '''cd C:\Users\**YOUR USER**\Documents\phasefield_ranking'''
    - cd changes directory, dir lists subdirectories within the current directory, mkdir creates a new directory in the directory you are in.
@@ -37,25 +37,25 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
      '''git clone  '''
    - You will then need to login to GitHub to complete the download.
 
-7. **Navigate into the working directory**
+8. **Navigate into the working directory**
    - Change into the working directory with the following line:
      '''cd  '''
 
-8. **Unzip the vectors**
+9. **Unzip the vectors**
    - Large vectors are required for the ranking, which have been compressed to save memory.
    - Use the following compand to expand the files:
      '''Expand-Archive -Path archive.zip -DestinationPath foldername'''
 
-9. **Moving datasets**
+10. **Moving datasets**
    - If using your own dataset for the training of the autoencoders, move them into the DATA folder.
    - This can be done either using the computers GUI and moving the dataset in Files, or by using the following command:
      '''Copy-Item C:\Users\**YOUR USER**\path\to\dataset C:\Users\**YOUR USER**\path\to\*****\DATA'''
 
-10. **Launching programme**
+11. **Launching programme**
    - In the ***** folder, launch jupyter notebook with the following:
    '''jupyter notebook'''
 
-11. **Running the programme**
+12. **Running the programme**
     - Follow the instructions within the notebook to run your own ranking.
     - It contains an example script, ****, that uses an pre-assembled dataset to perform a ranking. It may be best to try using this first to ensure it is working, and that the inputs are all understood.
     - A blank script can be found under ****. 
