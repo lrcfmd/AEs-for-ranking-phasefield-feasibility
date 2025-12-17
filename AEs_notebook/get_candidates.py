@@ -125,9 +125,12 @@ def mean_per_PF(k,size,data):
         stds.append(np.std(df)) 
     return means, stds, Nuni
 
-def compare_to_threshold(vals,query,size):
+def compare_to_threshold(vals,query,size,kmax):
     CFC = pd.DataFrame(columns = ["Phase Field", "Mean RE", "STD"])
-    data = pd.read_csv(f"DATA/query_ranking_{vals[0]}_features.csv")
+    if vals[0] == kmax:
+        data = pd.read_csv(f"DATA/query_full_MP_vectors.csv")    
+    else:
+        data = pd.read_csv(f"DATA/query_ranking_{vals[0]}_features.csv")
     means, stds, Nuni = mean_per_PF(vals[0], size, data)
     CFC["Phase Field"] = query["Phase Field"].iloc[:Nuni]
     CFC["Mean RE"] = means
