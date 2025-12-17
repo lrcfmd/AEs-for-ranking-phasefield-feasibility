@@ -45,7 +45,7 @@ cd C:\Users\**YOUR USER**\Documents\
 - cd changes directory, dir lists subdirectories within the current directory, mkdir creates a new directory in the directory you are in.
 - Clone the repository using the following in the command prompt:
 ```
-git clone
+git clone https://github.com/lrcfmd/AEs-for-ranking-phasefield-feasibility.git
 ```
 - You will then need to login to GitHub to complete the download.
 
