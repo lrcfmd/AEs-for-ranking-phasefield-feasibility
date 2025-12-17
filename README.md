@@ -59,14 +59,14 @@ cd AEs-for-ranking-phasefield-feasibility/AEs_notebook
 - A couple things had to be compressed to save storage.
 - Use the following compand to expand the first files:
 ```
-Expand-Archive -Path vectors.zip -DestinationPath VECS
+unzip vectors.zip
 ```
 - Then change into the DATA directory, and unzip the features:
 ```
 cd DATA
 ```
 ```
-Expand-Archive -Path magpie_tables.zip -DestinationPath magpie_tables
+unzip magpie_tables.zip
 ```
 ```
 cd ..
