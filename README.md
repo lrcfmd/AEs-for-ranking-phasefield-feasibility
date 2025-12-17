@@ -76,7 +76,7 @@ cd ..
 - If using your own dataset for the training of the autoencoders, move them into the DATA folder.
 - This can be done either using the computers GUI and moving the dataset in Files, or by using the following command:
 ```
-Copy-Item C:\Users\**YOUR USER**\path\to\dataset C:\Users\**YOUR USER**\path\to\AEs-for-ranking-phasefield-feasibility/AEs_notebook\DATA
+cp C:\Users\**YOUR USER**\path\to\dataset C:\Users\**YOUR USER**\path\to\AEs-for-ranking-phasefield-feasibility\AEs_notebook\DATA
 ```
 
 12. **Launching programme**
