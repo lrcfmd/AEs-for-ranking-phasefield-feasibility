@@ -16,7 +16,7 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
 ```
 conda create -n myenv -c anaconda git jupyter pandas numpy scikit-learn matplotlib
 ```
-- If required, myenv can be changed to whichever name you prefer for the environment
+- 'myenv' can be changed to whichever name you prefer for the environment
 
 
 4. **Activate the environment**
