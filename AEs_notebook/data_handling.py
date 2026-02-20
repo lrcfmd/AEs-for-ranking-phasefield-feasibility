@@ -8,9 +8,9 @@ import os
 
 def check_existing(atoms=None,size=None,path=None):
 
-    ground_truth = check_for_GT(atoms,size,path)
+    ground_truth, uni_size = check_for_GT(atoms,size,path)
     
-    query = check_for_Q(GT=ground_truth,atoms=atoms,size=size)
+    query = check_for_Q(GT=ground_truth,uni_size=uni_size,atoms=atoms,size=size)
     
     return ground_truth, query
 
@@ -26,13 +26,14 @@ def check_for_GT(atoms=None,size=None,path=None):
         data = limit_size(data, size)
         print("Checking if atoms are ok")
         data = check_atoms(data, atoms)
+        print("Removing phase fields with atomic number > 86")
+        data = rm86(data,atoms)
+        uni_size = len(data)
         print("Permuting the phase fields")
         data = permute(data)
-        print("Removing phase fields containing atoms with atomic number > 87")
-        data = rm86(data,atoms)
         data.to_csv("DATA/ground_truth.csv",index=False)
     
-    return data
+    return data, uni_size
 
 def limit_size(data,size):                                                  
     inds = [i for i, PF in enumerate(data["Phase Field"]) if len(PF.split(" ")) == size]
@@ -72,7 +73,7 @@ def rm86(data,atoms):
     
     return data
 
-def check_for_Q(GT,atoms=None,size=None):
+def check_for_Q(GT,uni_size,atoms=None,size=None):
     if "query.csv" in os.listdir("DATA"):                                   
         print("Found existing query dataset...")
         query_df = pd.read_csv(f"DATA/query.csv")
@@ -80,7 +81,8 @@ def check_for_Q(GT,atoms=None,size=None):
     else:
         print("Building new query dataset...",flush=True)                   
         print("Getting unique elements in the ground truth dataset",flush=True)
-        uni_els = unique_elements(pd.read_csv("DATA/ground_truth.csv"))     
+        GT = GT.iloc[:uni_size]
+        uni_els = unique_elements(GT)
         print("Constructing query phase fields",flush=True)
         query = unique_combinations(uni_els, GT, size)
         query_df = pd.DataFrame({"Phase Field": query})
