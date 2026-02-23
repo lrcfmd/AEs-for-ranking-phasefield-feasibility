@@ -5,6 +5,7 @@ from DATA.feature_labels import features
 from itertools import combinations, permutations
 from autoencoders import compress, run_AE
 import os
+import math
 
 def check_existing(atoms=None,size=None,path=None):
 
@@ -18,7 +19,7 @@ def check_for_GT(atoms=None,size=None,path=None):
     if "ground_truth.csv" in os.listdir("DATA"):
         data = pd.read_csv(f"DATA/ground_truth.csv")
         print("Found existing ground truth dataset...")
-        uni_size = len(data)/np.factorial(size)
+        uni_size = len(data)/math.factorial(size)
     else:
         print("Building a new ground truth dataset...")                     
         data = pd.read_csv(path)                          
