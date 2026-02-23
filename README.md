@@ -14,7 +14,7 @@ Autoencoders for ranking the chemical feasibility of novel phasefields, with res
 3. **Create a virtual environment with the required packages**
 - Type or copy the following line into the command prompt to create a virtual environment:
 ```
-conda create -n myenv -c anaconda git jupyter pandas numpy scikit-learn matplotlib
+conda create -n myenv -c anaconda git jupyter pandas numpy scikit-learn matplotlib python=3.9
 ```
 - 'myenv' can be changed to whichever name you prefer for the environment
 
