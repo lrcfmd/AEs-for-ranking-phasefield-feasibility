@@ -1,59 +1,12 @@
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+import os
 from sklearn.preprocessing import StandardScaler
 
-def compress(input_data, k_features):
-    input_data = StandardScaler().fit_transform(input_data)
-    input_dim = len(input_data[0])
-
-    # Normalize
-    try:
-        normalizer = tf.keras.layers.experimental.preprocessing.Normalization()
-    except:
-        normalizer =tf.keras.layers.Normalization()
-    normalizer.adapt(input_data)
-    # Build model
-    atinput = tf.keras.layers.Input(shape=(input_dim,))
-    encoded_input = normalizer(atinput)
-    encoded = tf.keras.layers.Dense(k_features, activation='relu')(encoded_input)
-    decoded = tf.keras.layers.Dense(input_dim, activation='sigmoid')(encoded)
-    decoded = tf.keras.layers.Reshape((input_dim,))(decoded)
-    ae = tf.keras.Model(atinput, decoded)
-    #--- extract RE-----
-    reconstruction_loss = tf.keras.losses.MeanSquaredError(encoded_input, decoded)
-    encoder = tf.keras.Model(atinput, encoded)
-    autoencoder = tf.keras.Model(atinput,decoded)
-    early = tf.keras.callbacks.EarlyStopping(
-             monitor="loss",
-             min_delta=0,
-             patience=10,
-             verbose=0,
-             mode="auto",
-             baseline=None,
-             restore_best_weights=False)
-
-    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-                  initial_learning_rate=1e-3,
-                  decay_steps=1000,
-                  decay_rate=0.9)
-    optim = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
-    ae.add_loss(reconstruction_loss)
-    ae.compile(optimizer=optim)
-
-    ae.fit(input_data, input_data,
-                epochs=1000,
-                batch_size=16,
-                callbacks=[early],
-                shuffle=True)
-
-    atomvecs = encoder.predict(input_data)
-
-    return atomvecs, reconstruction_loss, encoder, autoencoder
-
-def run_AE(GT_vecs, Q_vecs, vector_length, epochs=400):
+def run_AE(GT_vecs, Q_vecs, vector_length, k, epochs=400):
     model, history = rank(GT_vecs, vector_length=vector_length, epochs=epochs)
-    
+    save_model(model, k)   
     GT_pred = model.predict(GT_vecs)
     Q_pred = model.predict(Q_vecs)
     try:
@@ -154,3 +107,32 @@ def PDNB(X, Y):
     euclidean_sq = np.square(Y - X)
     return np.sqrt(np.sum(euclidean_sq, axis=1)).ravel()
 
+def save_model(m, k):
+    model_save_path = os.path.join("DATA", "MODELS", str(k))
+    m.save(model_save_path)
+    return
+
+def choose_existing_model(model):
+    if model == None:
+        df = pd.read_csv(os.path.join("DATA", "vals_df.csv"))
+        k = int(df["k"].loc[df["sqrt(MFD*TPR)"].idxmax()])
+    elif model == "MP":
+        df = pd.read_csv(os.path.join("DATA", "vals_df.csv"))
+        k = int(df["k"].iloc[-1])
+    else:
+        k = int(model)
+    
+    m = load_model(k)
+
+    return m, k
+
+def load_model(k_val):
+    model_load_path = os.path.join("DATA", "MODELS", str(k_val))
+    model = tf.keras.models.load_model(model_load_path)
+    return model
+
+def run_loaded_AE(model, Q_vecs):
+    Q_pred = model.predict(Q_vecs)
+    Q_vecs = model.normalizer(Q_vecs)
+    re = PDNB(Q_vecs, Q_pred)
+    return re 

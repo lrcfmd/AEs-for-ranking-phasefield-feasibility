@@ -3,7 +3,7 @@ import pandas as pd
 from DATA.ELEMENTS import ELEMENTS
 from DATA.feature_labels import features
 from itertools import combinations, permutations
-from autoencoders import compress, run_AE
+from autoencoders import run_AE
 import os
 import math
 
@@ -185,3 +185,10 @@ def read_features(f):
     lines = open(f,'r').readlines()
     
     return [float(l.strip()) if l.strip().isdigit else 0 for l in lines]
+
+def loaded_AE_query(data, size, atoms):
+    Q = limit_size(data, size)
+    Q = check_atoms(data, atoms)
+    Q = permute(data)
+
+    return Q

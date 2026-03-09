@@ -68,20 +68,21 @@ def calculate(GT_RE, Q_RE):
 
 def save_or_not(k,MFD,MFD_threshold,TPR,QPR,vals_df,vals=None):
     if vals==None:
-        vals = list([k,MFD,MFD_threshold,TPR,QPR,MFD*TPR])
+        vals = list([k,MFD,MFD_threshold,TPR,QPR,np.sqrt(MFD*TPR)])
         vals_df.loc[len(vals_df)] = vals
 
     elif vals[5]<MFD*TPR:
-        vals = list([k,MFD,MFD_threshold,TPR,QPR,MFD*TPR])
+        vals = list([k,MFD,MFD_threshold,TPR,QPR,np.sqrt(MFD*TPR)])
         vals_df.loc[len(vals_df)] = vals
 
     else:
-        vals_df.loc[len(vals_df)] = [k,MFD,MFD_threshold,TPR,QPR,MFD*TPR]
+        vals_df.loc[len(vals_df)] = [k,MFD,MFD_threshold,TPR,QPR,np.sqrt(MFD*TPR)]
         vals = vals
 
     return vals, vals_df
 
 def plot(ax, k, kmin, GT_fraction, Q_fraction, single_eval, iter_num):
+    tmp_df = pd.DataFrame(columns=["Reconstruction Error", "Ground Truth Proportion", "Query Proportion", "Difference"])
     ax.plot(iter_num,GT_fraction,color='blue',label='Labelled')
     ax.plot(iter_num,Q_fraction,color='orange',label='Unlabelled')
     ax.plot(iter_num,single_eval,color='gray',label='Fraction Difference')
@@ -108,6 +109,12 @@ def plot(ax, k, kmin, GT_fraction, Q_fraction, single_eval, iter_num):
     ax.set_title(f"{k-kmin})", fontsize = 20)
     ax.tick_params(axis="y",labelsize=15)
     ax.tick_params(axis="x",labelsize=15)
+    tmp_df["Reconstruction Error"] = iter_num
+    tmp_df["Ground Truth Proportion"] = GT_fraction
+    tmp_df["Query Proportion"] = Q_fraction
+    tmp_df["Difference"] = single_eval
+    tmp_df.to_csv(f"DATA/MFD_PLOTS/MFD_{k}.csv", index=False)
+    return
 
 def mean_per_PF(k,size,data): 
     data = data["RE"]
@@ -136,10 +143,24 @@ def compare_to_threshold(vals,query,size,kmax):
     CFC["Mean RE"] = means
     CFC["STD"] = stds
     CFC = CFC.loc[CFC["Mean RE"] + CFC["STD"] < vals[2]]
-    CFC.to_csv("DATA/chemically_feasible_candidates.csv", index=False)
     CFC.sort_values(by="Mean RE", inplace=True, ignore_index=True)
+    CFC = add_and_order(CFC, size)
+    CFC.to_csv("DATA/chemically_feasible_candidates.csv", index=False)
     return CFC
 
+def add_and_order(CFC, size):
+    tmp_df = pd.DataFrame(columns=[f"Atoms {i}" for i in range(size)])
+    atoms = [s.strip() for s in open('DATA/magpie_tables/Abbreviation.table', 'r').readlines()]
+
+    for n, PF in enumerate(CFC["Phase Field"]):
+        new_PF = " ".join(atoms[i] for i in sorted([atoms.index(el) for el in PF.split(" ")]))
+        CFC.at[n, "Phase Field"] = new_PF
+        tmp_df.loc[len(tmp_df)] = [str(el) for el in new_PF.split(" ")]
+    
+    CFC = pd.concat([tmp_df, CFC], axis=1)
+
+    return CFC
+        
 class ResultsAnalysis:
     def __init__(self, ranking):
         self.ranking = ranking
@@ -147,21 +168,36 @@ class ResultsAnalysis:
         self.RE = self.ranking["Mean RE"]
         self.STD = self.ranking["STD"]
 
-    def get_top_n(self, n=10):
-        return self.ranking.iloc[range(n-1)]
+    def get_top_n(self, n=10, export=False, name=None):
+        if export==True:
+            self.ranking.iloc[range(n)].to_csv(f"{name}.csv", index=False)
+        return self.ranking.iloc[range(n)]
 
-    def phase_fields_containing(self, atom_pool):
+    def phase_fields_containing(self, atom_pool, export=False, name=None):
         inds = []
         for i,PF in enumerate(self.candidates):
             if any(atom in atom_pool for atom in PF.split(" ")):
                 inds.append(i)
-
+        if export==True:
+            self.ranking.iloc[inds].to_csv(f"{name}.csv", index=False)
         return self.ranking.iloc[inds]
 
-    def phase_fields_containing_only(self, atom_pool):
+    def phase_fields_containing_only(self, atom_pool, export=False, name=None):
         inds = []
         for i,PF in enumerate(self.candidates):
             if all(atom in atom_pool for atom in PF.split(" ")):
                 inds.append(i)
-
+        if export==True:
+            self.ranking.iloc[inds].to_csv(f"{name}.csv", index=False)
         return self.ranking.iloc[inds]
+
+    def get_phase_field(self, PF):
+        found = False
+        for i, pf in enumerate(self.candidates):
+            if all(el in pf.split(" ") for el in PF.split(" ")):
+                   return self.ranking.iloc[i]
+                   found = True
+                   break
+        if found == False:
+            print("Not found")
+        return

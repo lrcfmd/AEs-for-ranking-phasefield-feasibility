@@ -5,7 +5,7 @@ import sys
 from DATA.ELEMENTS import ELEMENTS
 from DATA.feature_labels import features
 from itertools import combinations
-from autoencoders import compress, run_AE
+from autoencoders import run_AE
 import pickle as pkl
 
 def get_elemental_features(atoms, features):                                                                    ### Builds elemental feature vectors
@@ -49,11 +49,3 @@ if __name__ == "__main__":
     atoms = [s.strip() for s in open('DATA/magpie_tables/Abbreviation.table', 'r').readlines()]
     el_feats = get_elemental_features(atoms, features)
     
-    for k in range(1, 21):
-        el_vecs, RE, encoder, autoencoder = compress(el_feats,k)
-        
-        with open(f"VECS/vectors_L{k}.pkl", "wb") as f:
-            pkl.dump(el_vecs, f)
-
-    #for k in range(1, 16):
-    #    get_latent_vecs(k, "x", "y")
